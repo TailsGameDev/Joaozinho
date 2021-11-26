@@ -13,6 +13,8 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float maxXSpeed = 0.0f;
 
+    [SerializeField] private float inverseDragX = 0.0f;
+
     [SerializeField]
     private float jumpForce = 0.0f;
 
@@ -24,13 +26,23 @@ public class Player : MonoBehaviour
     [SerializeField]
     private Damageable damageable;
 
+    [SerializeField] private Collider2D isOnGroundTrigger = null;
+
+    // [SerializeField] private Transform isOnGroundRaycastOrigin = null;
+    // [SerializeField] private Collider2D isOnGroundTrigger = null;
+
     private static Player instance;
+
+    // private bool isOnGround;
+    private int groundsInTouch;
 
     private TransformWrapper transformWrapper;
 
     public static Player Instance { get => instance; }
     public TransformWrapper TransformWrapper { get => transformWrapper; }
     public Damageable Damageable { get => damageable; }
+    public bool IsOnGround { get => (groundsInTouch > 0); }
+    public Vector3 Velocity { get => rb2d.velocity; }
 
     private void Awake()
     {
@@ -57,12 +69,23 @@ public class Player : MonoBehaviour
             bullet.TransformWrapper.Right = direction;
             bullet.Rb2d.velocity = (direction * bullet.Speed) + rb2d.velocity;
         }
+
+        /*
+        isOnGround = Physics.Raycast(origin: isOnGroundRaycastOrigin.position, direction: Vector3.down, maxDistance: 30.1f);
+        Debug.LogError(isOnGround);
+        */
+        /*
+        Collider2D[] results = new Collider2D[15];
+        int overlappingCollidersAmount = isOnGroundTrigger.OverlapCollider(new ContactFilter2D().NoFilter(), results);
+        isOnGround = (overlappingCollidersAmount > 1);
+        */
     }
 
     private void FixedUpdate()
     {
         float horizontalInput = Input.GetAxisRaw("Horizontal");
 
+        rb2d.velocity = new Vector2(rb2d.velocity.x * inverseDragX, rb2d.velocity.y);
         if (
             // Don't push player further from maxXSpeed
             !(horizontalInput > 0.0f && rb2d.velocity.x > maxXSpeed)
@@ -70,6 +93,26 @@ public class Player : MonoBehaviour
             )
         {
             rb2d.AddForce(Vector3.right * horizontalInput * speed);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Ground" || collision.tag == "Enemy")
+        {
+            groundsInTouch++;
+            if (collision.transform.position.y < isOnGroundTrigger.transform.position.y)
+            {
+                // Make Y speed 0 so the impulse in the floor does not slow the player down
+                rb2d.velocity = new Vector2(rb2d.velocity.x, 0.0f);
+            }
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.tag == "Ground" || collision.tag == "Enemy")
+        {
+            groundsInTouch--;
         }
     }
 }

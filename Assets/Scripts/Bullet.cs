@@ -11,9 +11,6 @@ public class Bullet : MonoBehaviour
     private float speed = 0.0f;
 
     [SerializeField]
-    private float lifeTime = 0.0f;
-
-    [SerializeField]
     private SpriteRenderer spriteRenderer = null;
 
     private TransformWrapper transformWrapper = null;

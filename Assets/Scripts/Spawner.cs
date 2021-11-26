@@ -7,9 +7,12 @@ public class Spawner : MonoBehaviour
     [SerializeField]
     private Transform spawnPoint = null;
 
+    private Enemy enemy;
+
     private TransformWrapper spawnPointWrapper;
 
     public TransformWrapper SpawnPoint { get => spawnPointWrapper; }
+    public Enemy Enemy { get => enemy; set => enemy = value; }
 
     private void Start()
     {

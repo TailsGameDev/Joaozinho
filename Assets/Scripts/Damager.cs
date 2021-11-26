@@ -20,8 +20,6 @@ public class Damager : MonoBehaviour
     private float maxDamage = 0.0f;
 
     [SerializeField]
-    private AudioSource audioSource = null;
-    [SerializeField]
     private AudioClip[] spawnSFXs = null;
     [SerializeField]
     private float minPitch = 0.0f;
