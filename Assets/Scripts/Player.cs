@@ -27,11 +27,16 @@ public class Player : MonoBehaviour
     private Damageable damageable;
 
     [SerializeField] private Collider2D isOnGroundTrigger = null;
+    [SerializeField] private Transform bulletSpawnPointRotator = null;
+
+    [SerializeField] private SpriteRenderer spriteRenderer = null;
 
     // [SerializeField] private Transform isOnGroundRaycastOrigin = null;
     // [SerializeField] private Collider2D isOnGroundTrigger = null;
 
     private static Player instance;
+
+    public static readonly string TAG = "Player";
 
     // private bool isOnGround;
     private int groundsInTouch;
@@ -43,6 +48,7 @@ public class Player : MonoBehaviour
     public Damageable Damageable { get => damageable; }
     public bool IsOnGround { get => (groundsInTouch > 0); }
     public Vector3 Velocity { get => rb2d.velocity; }
+    public static bool IsDead { get => instance == null; }
 
     private void Awake()
     {
@@ -53,7 +59,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        bool jump = Input.GetButtonDown("Jump");
+        bool jump = Input.GetButtonDown("Jump") && IsOnGround;
         if (jump)
         {
             rb2d.AddForce(Vector3.up * jumpForce);
@@ -79,6 +85,14 @@ public class Player : MonoBehaviour
         int overlappingCollidersAmount = isOnGroundTrigger.OverlapCollider(new ContactFilter2D().NoFilter(), results);
         isOnGround = (overlappingCollidersAmount > 1);
         */
+        if (spriteRenderer.flipX)
+        {
+            bulletSpawnPointRotator.localEulerAngles = (new Vector3(0.0f, 180.0f, 0.0f));
+        }
+        else
+        {
+            bulletSpawnPointRotator.localEulerAngles = (new Vector3(0.0f, 0.0f, 0.0f));
+        }
     }
 
     private void FixedUpdate()
@@ -114,5 +128,10 @@ public class Player : MonoBehaviour
         {
             groundsInTouch--;
         }
+    }
+
+    public void SetTheActive(bool theActive)
+    {
+        gameObject.SetActive(theActive);
     }
 }

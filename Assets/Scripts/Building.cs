@@ -19,11 +19,12 @@ public class Building : MonoBehaviour
 
     private void Awake()
     {
-        foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+        for (int s = 0; s < spriteRenderers.Length; s++)
         {
-            spriteRenderer.sortingOrder = (int) -(transform.position.y * 100.0f);
-            spriteRenderer.color = possibleColors[Random.Range(0, possibleColors.Length)];
+            SpriteRenderer spriteRenderer = spriteRenderers[s];
+            spriteRenderer.sortingOrder = (int) -((transform.position.y * 100.0f) - s);
         }
+        spriteRenderers[0].color = possibleColors[Random.Range(0, possibleColors.Length)];
         /*
         transformWrapper = new TransformWrapper(spritesNode);
 

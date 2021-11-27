@@ -101,6 +101,11 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if (Player.IsDead)
+        {
+            enabled = false;
+        }
+
         switch (currentState)
         {
             case state.HIDDEN:

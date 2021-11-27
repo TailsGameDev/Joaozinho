@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Building
   - Ground
+  - Heal
   layers:
   - Default
   - TransparentFX
@@ -47,6 +48,9 @@ TagManager:
     locked: 0
   - name: Buildings
     uniqueID: 3173780623
+    locked: 0
+  - name: LinaHall
+    uniqueID: 1677233547
     locked: 0
   - name: Player
     uniqueID: 4160813853

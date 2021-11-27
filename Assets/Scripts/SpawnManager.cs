@@ -19,8 +19,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private WaveData[] waves = null;
     private int currentWaveIndex;
 
-    [SerializeField] private Text waveText = null;
-
     private List<Spawner> spawners = new List<Spawner>();
 
     private static SpawnManager instance;
@@ -29,23 +27,33 @@ public class SpawnManager : MonoBehaviour
 
     private List<Enemy> aliveEnemies = new List<Enemy>();
 
-    private static System.Action onGameWin;
+    private System.Action onGameWin;
+    private System.Action onWaveChanged;
 
     public static SpawnManager Instance { get => instance; }
+    public int CurrentWaveIndex { get => currentWaveIndex; }
 
     private void Awake()
     {
         instance = this;
     }
-
+    private void OnDestroy()
+    {
+        onGameWin = null;
+        onWaveChanged = null;
+    }
     public void AddSpawner(Spawner spawner)
     {
         spawners.Add(spawner);
     }
 
-    public static void RegisterOnGameWinAction(System.Action action)
+    public void RegisterOnGameWinAction(System.Action action)
     {
         onGameWin += action;
+    }
+    public void RegisterOnWaveChangedAction(System.Action action)
+    {
+        onWaveChanged += action;
     }
 
     private void Update()
@@ -85,7 +93,7 @@ public class SpawnManager : MonoBehaviour
                 // Start next wave
                 currentWaveIndex++;
 
-                waveText.text = currentWaveIndex.ToString();
+                onWaveChanged?.Invoke();
             }
             else
             {
@@ -118,5 +126,10 @@ public class SpawnManager : MonoBehaviour
         }
 
         return randomAttempt;
+    }
+
+    public void SetEnable(bool shouldEnable)
+    {
+        this.enabled = shouldEnable;
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Damager : MonoBehaviour
@@ -28,11 +26,14 @@ public class Damager : MonoBehaviour
 
     private void Awake()
     {
-        SFXPlayer.Instance.PlaySFX
-            (
-                audioClip: spawnSFXs[Random.Range(0, spawnSFXs.Length)], 
-                pitch: Random.Range(minPitch, maxPitch)
-            );
+        if (spawnSFXs != null && spawnSFXs.Length > 0)
+        {
+            SFXPlayer.Instance.PlaySFX
+                (
+                    audioClip: spawnSFXs[Random.Range(0, spawnSFXs.Length)], 
+                    pitch: Random.Range(minPitch, maxPitch)
+                );
+        }
     }
 
     public int Damage 
@@ -44,17 +45,6 @@ public class Damager : MonoBehaviour
     }
     public characterType CharacterTypeToHit { get => characterTypeToHit; }
 
-    /*
-    private void OnTriggerEnter2D(Collider2D col)
-    {
-        if (col.tag == characterTypeToHit.ToString())
-        {
-            Damageable damageable = col.GetComponent<Damageable>();
-            damageable.OnDamageTaken(damage);
-            OnDamageDealt();
-        }
-    }
-    */
     public void OnDamageDealt()
     {
         Destroy(gameObject);

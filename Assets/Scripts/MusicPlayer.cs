@@ -10,16 +10,15 @@ public class MusicPlayer : MonoBehaviour
     [SerializeField]
     private AudioClip[] musics = null;
 
+    private bool initialized;
+
     private int musicIndex;
 
-    private void Awake()
-    {
-        musicIndex = Random.Range(0, musics.Length);
-    }
+    public bool Initialized { set => initialized = value; }
 
     private void Update()
     {
-        if (!audioSource.isPlaying)
+        if (initialized && !audioSource.isPlaying)
         {
             audioSource.PlayOneShot(musics[musicIndex]);
             musicIndex = (musicIndex + 1) % musics.Length;

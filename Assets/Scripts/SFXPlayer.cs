@@ -29,4 +29,13 @@ public class SFXPlayer : MonoBehaviour
 
         audioSourceIndex = (audioSourceIndex + 1) % audioSources.Length;
     }
+
+    public AudioSource PlaySFXExclusiveAudioSource(AudioClip audioClip)
+    {
+        // TODO: Handle SFX volume to this runtime created audioSource
+        AudioSource audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.clip = audioClip;
+        audioSource.Play();
+        return audioSource;
+    }
 }
