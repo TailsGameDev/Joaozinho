@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
@@ -27,14 +28,19 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private MusicPlayer musicPlayer = null;
     [SerializeField] private SpawnManager spawnManager = null;
     [SerializeField] private float waitTimeFromDeathToPause = 0.0f;
+    [SerializeField] private GameObject diePopUp = null;
+    [SerializeField] private GameObject normalPausePopUp = null;
+    [SerializeField] private GameObject victoryPausePopUp = null;
     private State currentState;
     private float timeToPause;
-
+    private bool gameVictory;
 
     private void Start()
     {
         PauseTheGame();
         StartCoroutine(IntroVideoCoroutine());
+        SpawnManager.Instance.RegisterOnGameWinAction(() => { this.gameVictory = true; });
+        videoNode.SetActive(true);
     }
     private void PauseTheGame()
     {
@@ -83,9 +89,12 @@ public class PauseMenu : MonoBehaviour
                 break;
             case State.PLAYING:
                 spawnManager.SetEnable(true);
-                Player.Instance.SetTheActive(true);
+                if (Player.Instance != null)
+                {
+                    Player.Instance.SetTheActive(true);
+                }
 
-                if (Player.IsDead)
+                if (Player.IsDead || gameVictory)
                 {
                     timeToPause = Time.time + waitTimeFromDeathToPause;
                     currentState = State.WAITING_TO_PAUSE;
@@ -94,6 +103,8 @@ public class PauseMenu : MonoBehaviour
                 {
                     currentState = State.PAUSED;
                     pauseMenuNode.SetActive(true);
+                    diePopUp.SetActive(Player.IsDead);
+                    normalPausePopUp.SetActive(!Player.IsDead);
                 }
                 break;
             case State.WAITING_TO_PAUSE:
@@ -101,6 +112,9 @@ public class PauseMenu : MonoBehaviour
                 {
                     pauseMenuNode.SetActive(true);
                     currentState = State.PAUSED;
+                    diePopUp.SetActive((!gameVictory) && Player.IsDead);
+                    normalPausePopUp.SetActive((!gameVictory) && (!Player.IsDead));
+                    victoryPausePopUp.SetActive(gameVictory);
                 }
                 break;
             case State.PAUSED:
@@ -129,5 +143,9 @@ public class PauseMenu : MonoBehaviour
         {
             this.audioSource.Play();
         }
+    }
+    public void OnRestartGameButtonClick()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
