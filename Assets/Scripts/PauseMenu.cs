@@ -6,6 +6,7 @@ public class PauseMenu : MonoBehaviour
 {
     private enum State
     {
+        INITIALIZING,
         PAUSED,
         PLAYING,
         WAITING_TO_PAUSE,
@@ -14,8 +15,10 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private AudioClip introAudio = null;
     [SerializeField] private GameObject videoNode = null;
     [SerializeField] private Image introVideoImage = null;
-    [SerializeField] private Sprite[] introVideoSprites = null;
+    [SerializeField] private Sprite[] joaozinhoSprites = null;
+    [SerializeField] private Sprite[] giseleBrabaSprites = null;
     [SerializeField] private float timeIntervalToChangeSprite = 0.0f;
+    private Sprite[] introVideoSprites = null;
     private float timeToChangeSprite;
     private bool isVideoPaused;
     private AudioSource audioSource;
@@ -27,22 +30,40 @@ public class PauseMenu : MonoBehaviour
     private State currentState;
     private float timeToPause;
 
-    private IEnumerator Start()
-    {
-        this.audioSource = SFXPlayer.Instance.PlaySFXExclusiveAudioSource(introAudio);
 
-        // Pause The Game
+    private void Start()
+    {
+        PauseTheGame();
+        StartCoroutine(IntroVideoCoroutine());
+    }
+    private void PauseTheGame()
+    {
         currentState = State.PAUSED;
         spawnManager.SetEnable(false);
         Player.Instance.SetTheActive(false);
         pauseMenuNode.SetActive(true);
+    }
+    private IEnumerator IntroVideoCoroutine()
+    {
+        this.audioSource = SFXPlayer.Instance.PlaySFXExclusiveAudioSource(introAudio);        
 
         while (!audioSource.isPlaying)
         {
             yield return null;
         }
 
+        introVideoSprites = giseleBrabaSprites;
+
         float timeToEndVideo = Time.time + introAudio.length;
+        float timeToJoaozinhoTalk = Time.time + 86.0f; // 89.0f;
+
+        while (Time.time < timeToJoaozinhoTalk && !Input.GetKeyDown(KeyCode.Tab))
+        {
+            yield return null;
+        }
+
+        introVideoSprites = joaozinhoSprites;
+
         while (Time.time < timeToEndVideo && !Input.GetKeyDown(KeyCode.Tab))
         {
             yield return null;
@@ -58,6 +79,8 @@ public class PauseMenu : MonoBehaviour
     {
         switch (currentState)
         {
+            case State.INITIALIZING:
+                break;
             case State.PLAYING:
                 spawnManager.SetEnable(true);
                 Player.Instance.SetTheActive(true);
